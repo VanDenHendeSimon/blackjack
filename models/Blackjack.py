@@ -46,38 +46,41 @@ class Blackjack:
 
     def play(self):
         # No winner at the start of the game
-        winner = None
+        list_of_winners = []
 
         # Start the game by giving each player 2 cards from the deck
         for _ in range(2):
             for player in self.players:
                 player.hand.take_card()
                 if Blackjack.check_blackjack(player):
-                    winner = player
+                    list_of_winners.append(player)
+                    player.decisions_left = 0
+                    print("%s has blackjack!" % player.name)
 
         # while playing
         while len(self.active_players) > 0:
             for player in self.active_players:
                 decision = self.get_decision(player)
-                self.actions[decision](player)
+                self.actions.get(decision, self.do_nothing)(player)
 
                 if Blackjack.check_blackjack(player):
-                    winner = player
-                    break
+                    list_of_winners.append(player)
+                    player.decisions_left = 0
+                    print("%s has blackjack!" % player.name)
 
         # After playing
-        if not winner:
-            winner = self.decide_winner()
-        Blackjack.announce_winner(winner)
+        if len(list_of_winners) == 0:
+            list_of_winners = self.decide_winner()
+        Blackjack.announce_winner(list_of_winners)
 
     def get_decision(self, player):
-        print("\n%s, what is your decision" % player.name)
+        print("\n%s, what is your decision?" % player.name)
         print("Current cards: %s (%s)" % (player.hand.cards, player.hand.sum_of_cards))
         possibilities = [
             "hit",
             "stand",
             "double down",
-            "split"
+            "split",
         ]
 
         if player.decisions_left == -1:
@@ -87,7 +90,18 @@ class Blackjack:
 
         decision = self.ask_decision(possibilities)
         while decision not in possibilities:
-            print("decision is invalid")
+            if decision == "soft":
+                player.hand.soft = True
+                print("\nTurned hand soft. Aces are now worth 11 in stead of 1")
+                print("Current cards: %s (%s)\n" % (player.hand.cards, player.hand.sum_of_cards))
+            elif decision == "hard":
+                player.hand.soft = False
+                print("\nTurned hand hard. Aces are now worth 1 in stead of 11")
+                print("Current cards: %s (%s)\n" % (player.hand.cards, player.hand.sum_of_cards))
+            else:
+                print("decision is invalid")
+
+            # ask again
             decision = self.ask_decision(possibilities)
 
         return decision
@@ -108,7 +122,7 @@ class Blackjack:
 
     @staticmethod
     def ask_decision(possibilities):
-        return input("%s >> " % ", ".join(possibilities)).lower()
+        return input("%s, soft, hard >> " % ", ".join(possibilities)).lower()
 
     @staticmethod
     def hit(player):
@@ -135,6 +149,10 @@ class Blackjack:
     def surrender(player):
         print("%s chose to surrender" % player.name)
         player.decisions_left = 0
+
+    @staticmethod
+    def do_nothing(_):
+        pass
 
     @staticmethod
     def check_blackjack(player):
