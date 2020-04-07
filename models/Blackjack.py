@@ -52,10 +52,8 @@ class Blackjack:
         for _ in range(2):
             for player in self.players:
                 player.hand.take_card()
-                if Blackjack.check_blackjack(player):
-                    list_of_winners.append(player)
-                    player.decisions_left = 0
-                    print("%s has blackjack!" % player.name)
+                # update the list of winners if this is necassery
+                list_of_winners = Blackjack.check_blackjack(player, list_of_winners)
 
         # while playing
         while len(self.active_players) > 0:
@@ -63,10 +61,8 @@ class Blackjack:
                 decision = self.get_decision(player)
                 self.actions.get(decision, self.do_nothing)(player)
 
-                if Blackjack.check_blackjack(player):
-                    list_of_winners.append(player)
-                    player.decisions_left = 0
-                    print("%s has blackjack!" % player.name)
+                # update the list of winners if this is necassery
+                list_of_winners = Blackjack.check_blackjack(player, list_of_winners)
 
         # After playing
         if len(list_of_winners) == 0:
@@ -155,14 +151,16 @@ class Blackjack:
         pass
 
     @staticmethod
-    def check_blackjack(player):
+    def check_blackjack(player, winners):
         if len(player.hand.cards) == 2:
             characters = [c.character for c in player.hand.cards]
             # Check if there is a 10 and an ace
             if 10 in characters and 1 in characters:
-                return True
+                winners.append(player)
+                player.decisions_left = 0
+                print("*** %s has blackjack! ***" % player.name)
 
-        return False
+        return winners
 
     @staticmethod
     def announce_winner(winner):
