@@ -7,7 +7,7 @@ import os
 def main():
     game = Blackjack(1)
     game.add_player("Bimie")
-    game.add_player("Lunie")
+    game.add_player("Drienie")
 
     game.play()
 

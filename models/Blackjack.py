@@ -44,7 +44,7 @@ class Blackjack:
 
     @property
     def wager(self):
-        return sum([p.current_bet for p in self.players])
+        return sum([p.current_bet for p in self.players]) * self.payout_wage
 
     @property
     def starting_bet(self):
@@ -57,6 +57,7 @@ class Blackjack:
         if name not in self.player_names:
             new_player = Player(name, self.deck)
             self._players.append(new_player)
+            print("The starting bet is: %s" % self.starting_bet)
         else:
             print("This name is already chosen. Choose again.")
 
@@ -69,7 +70,7 @@ class Blackjack:
             for player in self.players:
                 player.hand.take_card()
                 # update the list of winners if this is necassery
-                list_of_winners = self.check_blackjack(player, list_of_winners)
+                list_of_winners = Blackjack.check_blackjack(player, list_of_winners)
                 Blackjack.take_money(player, self.starting_bet*0.5)
 
         # while playing
@@ -86,6 +87,10 @@ class Blackjack:
         # After playing
         if len(list_of_winners) == 0:
             list_of_winners = self.decide_winner()
+        else:
+            # 3:2
+            self.payout_wage *= 1.5
+
         self.show_cards()
         Blackjack.announce_winner(list_of_winners)
         print("Wager of the game: %s" % self.wager)
@@ -211,7 +216,8 @@ class Blackjack:
     def do_nothing(_):
         pass
 
-    def check_blackjack(self, player, winners):
+    @staticmethod
+    def check_blackjack(player, winners):
         if len(player.hand.cards) == 2:
             characters = [c.character for c in player.hand.cards]
             # Check if there is a 10 and an ace
@@ -219,8 +225,6 @@ class Blackjack:
                 print("*** %s has blackjack! ***" % player.name)
                 winners.append(player)
                 player.decisions_left = 0
-                # 3:2
-                self.payout_wage = 1.5
 
         return winners
 
@@ -229,9 +233,7 @@ class Blackjack:
         print("Game is done!")
         print("*" * 20 + "\n")
         for player in self.players:
-            print("%s had: %s (%s)" % (
-                player.name, player.hand.cards, player.hand.sum_of_cards
-            ))
+            Blackjack.print_player_cards(player)
 
     @staticmethod
     def announce_winner(winner):
@@ -254,7 +256,10 @@ class Blackjack:
     def print_player_cards(player, new_line=False):
         if new_line:
             print("")
-        print("%s's cards: %s (%s)" % (player.name, player.hand.cards, player.hand.sum_of_cards))
+
+        card_value = player.hand.sum_of_cards if not \
+            len(Blackjack.check_blackjack(player, [])) > 0 else "BLACKJACK"
+        print("%s's cards: %s (%s)" % (player.name, player.hand.cards, card_value))
 
     def __str__(self):
         return "Currently playing with %s. %s Cards remaining in the deck" % (
