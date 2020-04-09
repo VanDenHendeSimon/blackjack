@@ -1,5 +1,6 @@
 from .Deck import Deck
 from .Player import Player
+import os
 
 
 class Blackjack:
@@ -72,7 +73,7 @@ class Blackjack:
                 Blackjack.take_money(player, self.starting_bet*0.5)
 
         # while playing
-        while len(self.active_players) > 1:
+        while len(self.active_players) > 0:
             for player in self.active_players:
                 decision = self.get_decision(player)
                 if decision == "double down":
@@ -91,7 +92,7 @@ class Blackjack:
 
     def get_decision(self, player):
         print("\n%s, what is your decision?" % player.name)
-        print("Current cards: %s (%s)" % (player.hand.cards, player.hand.sum_of_cards))
+        Blackjack.print_player_cards(player)
         possibilities = [
             "hit",
             "stand",
@@ -109,11 +110,11 @@ class Blackjack:
             if decision == "soft":
                 player.hand.soft = True
                 print("\nTurned hand soft. Aces are now worth 11 in stead of 1")
-                print("Current cards: %s (%s)\n" % (player.hand.cards, player.hand.sum_of_cards))
+                Blackjack.print_player_cards(player)
             elif decision == "hard":
                 player.hand.soft = False
                 print("\nTurned hand hard. Aces are now worth 1 in stead of 11")
-                print("Current cards: %s (%s)\n" % (player.hand.cards, player.hand.sum_of_cards))
+                Blackjack.print_player_cards(player)
             else:
                 print("decision is invalid")
 
@@ -156,6 +157,7 @@ class Blackjack:
         # in exchange for committing to stand after receiving exactly one more card
         # Other players can choose to double down as well,
         # but they have to stand after taking maximum one more card
+        os.system("cls")
         print("%s chose to double down" % player.name)
 
         # Put the player that doubled down as the first index of the queried list
@@ -166,6 +168,7 @@ class Blackjack:
         for _player in active_players:
             if _player != player:
                 # ask to double
+                Blackjack.print_player_cards(_player)
                 double_down = input("\nwould you like to double your wager as well, %s? [y/n] >> " % _player.name)
                 if double_down == "y":
                     _player.current_bet *= 2
@@ -174,6 +177,7 @@ class Blackjack:
                 _player.current_bet *= 2
 
             # ask for another card
+            Blackjack.print_player_cards(_player)
             another_card = input("would you like to hit once more, %s? [y/n] >> " % _player.name)
             if another_card == "y":
                 Blackjack.hit(_player)
@@ -237,6 +241,10 @@ class Blackjack:
             player.capital -= amount
         else:
             print("%s can not afford to play anymore. Bitch's broke" % player.name)
+
+    @staticmethod
+    def print_player_cards(player):
+        print("%s's cards: %s (%s)\n" % (player.name, player.hand.cards, player.hand.sum_of_cards))
 
     def __str__(self):
         return "Currently playing with %s. %s Cards remaining in the deck" % (
