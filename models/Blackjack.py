@@ -168,8 +168,8 @@ class Blackjack:
         for _player in active_players:
             if _player != player:
                 # ask to double
-                Blackjack.print_player_cards(_player)
-                double_down = input("\nwould you like to double your wager as well, %s? [y/n] >> " % _player.name)
+                Blackjack.print_player_cards(_player, new_line=True)
+                double_down = input("would you like to double your wager as well, %s? [y/n] >> " % _player.name)
                 if double_down == "y":
                     _player.current_bet *= 2
             else:
@@ -177,7 +177,7 @@ class Blackjack:
                 _player.current_bet *= 2
 
             # ask for another card
-            Blackjack.print_player_cards(_player)
+            Blackjack.print_player_cards(_player, new_line=True)
             another_card = input("would you like to hit once more, %s? [y/n] >> " % _player.name)
             if another_card == "y":
                 Blackjack.hit(_player)
@@ -243,8 +243,10 @@ class Blackjack:
             print("%s can not afford to play anymore. Bitch's broke" % player.name)
 
     @staticmethod
-    def print_player_cards(player):
-        print("%s's cards: %s (%s)\n" % (player.name, player.hand.cards, player.hand.sum_of_cards))
+    def print_player_cards(player, new_line=False):
+        if new_line:
+            print("")
+        print("%s's cards: %s (%s)" % (player.name, player.hand.cards, player.hand.sum_of_cards))
 
     def __str__(self):
         return "Currently playing with %s. %s Cards remaining in the deck" % (
