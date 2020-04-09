@@ -72,7 +72,7 @@ class Blackjack:
                 Blackjack.take_money(player, self.starting_bet*0.5)
 
         # while playing
-        while len(self.active_players) > 0:
+        while len(self.active_players) > 1:
             for player in self.active_players:
                 decision = self.get_decision(player)
                 if decision == "double down":
