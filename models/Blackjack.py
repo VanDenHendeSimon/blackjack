@@ -161,7 +161,6 @@ class Blackjack:
         # Put the player that doubled down as the first index of the queried list
         active_players.remove(player)
         active_players.insert(0, player)
-        print(active_players)
 
         # ask what the rest of the players want to do
         for _player in active_players:
