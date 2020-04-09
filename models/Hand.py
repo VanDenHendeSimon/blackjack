@@ -27,6 +27,9 @@ class Hand:
         result = 0
         for card in self.cards:
             # Jack, Queen and King = 10
+            # This is also defined in the card class,
+            # but is made sure of here since it might change
+            # The reason it is done there as well is to allow splitting a 10 and a king
             result += min(card.character, 10)
             if card.character == 1 and self.soft:
                 result += 10

@@ -106,6 +106,8 @@ class Blackjack:
 
             # List has to be of length 2
             # (There hasnt been any decisions yet and players start with 2 cards)
+            # Splitting is allowed on face cards and 10s as well (10 & king / 10 & Jack / ...)
+            # If you want to limit this to only 10s change the character property in the Card class
             if player.hand.cards[0].character == player.hand.cards[1].character:
                 # 2 Cards are the same -> possibility to split into 2 hands
                 possibilities.append("split")
@@ -193,6 +195,10 @@ class Blackjack:
     def split(player):
         # if the two cards have the same value, separate them to make two hands
         print("%s chose to split" % player.name)
+        player.current_bet *= 2
+        # Create 2 hands
+
+        # draw an additional card for each
 
     @staticmethod
     def surrender(player):

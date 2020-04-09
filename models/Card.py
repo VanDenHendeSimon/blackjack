@@ -18,7 +18,9 @@ class Card:
 
     @property
     def character(self):
-        return self._character
+        # 10s and jacks/queens/kings are treated the same overall (also for splitting)
+        return min(self._character, 10)
+        # return self._character
     @character.setter
     def character(self, value):
         self._character = value
