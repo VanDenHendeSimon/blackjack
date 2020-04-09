@@ -213,7 +213,9 @@ class Blackjack:
         return winners
 
     def show_cards(self):
-        print("Game is done!\n")
+        print("\n" + "*" * 20)
+        print("Game is done!")
+        print("*" * 20 + "\n")
         for player in self.players:
             print("%s had: %s (%s)" % (
                 player.name, player.hand.cards, player.hand.sum_of_cards
