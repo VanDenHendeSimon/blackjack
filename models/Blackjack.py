@@ -97,13 +97,18 @@ class Blackjack:
             "hit",
             "stand",
             "double down",
-            "split",
         ]
 
         if player.decisions_left == -1:
             # Players can only surrender as their first decision
             possibilities.append("surrender")
             player.decisions_left = 999
+
+            # List has to be of length 2
+            # (There hasnt been any decisions yet and players start with 2 cards)
+            if player.hand.cards[0].character == player.hand.cards[1].character:
+                # 2 Cards are the same -> possibility to split into 2 hands
+                possibilities.append("split")
 
         decision = self.ask_decision(possibilities)
         while decision not in possibilities:
@@ -188,9 +193,6 @@ class Blackjack:
     def split(player):
         # if the two cards have the same value, separate them to make two hands
         print("%s chose to split" % player.name)
-        if len(player.hand.cards) == 2:
-            if player.hand.cards[0] == player.hand.cards[1]:
-                pass
 
     @staticmethod
     def surrender(player):
