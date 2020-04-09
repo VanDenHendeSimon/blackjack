@@ -8,6 +8,7 @@ class Player:
         self._hand = Hand(self)
 
         self.current_bet = 0
+        self.capital = 100
         self.decisions_left = -1
 
         self.greet_player()
@@ -25,6 +26,13 @@ class Player:
     @current_bet.setter
     def current_bet(self, value):
         self._current_bet = value
+
+    @property
+    def capital(self):
+        return self._capital
+    @capital.setter
+    def capital(self, value):
+        self._capital = value
 
     @property
     def decisions_left(self):
