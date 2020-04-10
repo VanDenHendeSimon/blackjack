@@ -59,6 +59,7 @@ class Blackjack:
                 new_player = Player(name, self.deck)
                 self._players.append(new_player)
                 print("The starting bet is: %s" % self.starting_bet)
+                print("This makes your remaining capital: %s\n" % (new_player.wallet.capital - self.starting_bet))
             else:
                 # Only inserting when splitting, so no need to greet the second hand here
                 new_player = Player(name, self.deck, skip_greeting=True)
@@ -70,6 +71,10 @@ class Blackjack:
             return None
 
     def play(self):
+        print("*" * 20)
+        print("Game has started!")
+        print("*" * 20)
+
         # No winner at the start of the game
         list_of_winners = []
 
@@ -97,7 +102,7 @@ class Blackjack:
             list_of_winners = self.decide_winner()
         else:
             # 3:2
-            self.payout_wage *= 1.5
+            self.payout_wage = 1.5
 
         self.show_cards()
         Blackjack.announce_winner(list_of_winners)
@@ -229,8 +234,12 @@ class Blackjack:
         second_hand.hand.take_card()
 
         # Now that both hands have 2 cards, check for blackjack
-        Blackjack.check_blackjack(player, [])
-        Blackjack.check_blackjack(second_hand, [])
+        first_hand_bj = Blackjack.check_blackjack(player, [])
+        second_hand_bj = Blackjack.check_blackjack(second_hand, [])
+
+        # If either one has blackjack, make the payout 3:2
+        if len(first_hand_bj) > 0 or len(second_hand_bj) > 0:
+            self.payout_wage = 1.5
 
     @staticmethod
     def surrender(player):
@@ -277,6 +286,7 @@ class Blackjack:
         for winner in winners:
             # Divide total wager over all winners
             winner.wallet.capital += (wager / len(winners))
+            print("This puts your capital at: %s\n" % winner.wallet.capital)
 
     @staticmethod
     def take_money(player, amount):
