@@ -1,7 +1,7 @@
 class Wallet:
     """
-    This is made an object so that players who split their hand can share the same wallet
-    aka capital
+    This is made an object so that players who split their hand
+    can share the same wallet aka capital
     """
     def __init__(self):
         self.capital = 0
