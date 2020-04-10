@@ -53,13 +53,21 @@ class Blackjack:
     def starting_bet(self, value):
         self._starting_bet = value
 
-    def add_player(self, name):
+    def add_player(self, name, index=None):
         if name not in self.player_names:
-            new_player = Player(name, self.deck)
-            self._players.append(new_player)
-            print("The starting bet is: %s" % self.starting_bet)
+            if not index:
+                new_player = Player(name, self.deck)
+                self._players.append(new_player)
+                print("The starting bet is: %s" % self.starting_bet)
+            else:
+                # Only inserting when splitting, so no need to greet the second hand here
+                new_player = Player(name, self.deck, skip_greeting=True)
+                self._players.insert(index, new_player)
+
+            return new_player
         else:
             print("This name is already chosen. Choose again.")
+            return None
 
     def play(self):
         # No winner at the start of the game
@@ -93,7 +101,7 @@ class Blackjack:
 
         self.show_cards()
         Blackjack.announce_winner(list_of_winners)
-        print("Wager of the game: %s" % self.wager)
+        Blackjack.give_out_payment(list_of_winners, self.wager)
 
     def get_decision(self, player):
         print("\n%s, what is your decision?" % player.name)
@@ -102,6 +110,7 @@ class Blackjack:
             "hit",
             "stand",
             "double down",
+            "split"
         ]
 
         if player.decisions_left == -1:
@@ -196,14 +205,33 @@ class Blackjack:
 
             _player.decisions_left = 0
 
-    @staticmethod
-    def split(player):
+    def split(self, player):
         # if the two cards have the same value, separate them to make two hands
         print("%s chose to split" % player.name)
-        player.current_bet *= 2
-        # Create 2 hands
+
+        # Create new player for the second hand of the current player
+        second_hand = self.add_player(player.name + " (2)", index=self.active_players.index(player)+1)
+
+        # Link the two players' capitals
+        second_hand.wallet = player.wallet
+
+        # Match first hand's bet (out of the same wallet)
+        Blackjack.take_money(second_hand, player.current_bet)
+
+        # Change initial player's name
+        player.name = player.name + " (1)"
+
+        # Split cards
+        second_hand.hand.cards = [player.hand.cards[1]]
+        player.hand.cards = [player.hand.cards[0]]
 
         # draw an additional card for each
+        player.hand.take_card()
+        second_hand.hand.take_card()
+
+        # Now that both hands have 2 cards, check for blackjack
+        Blackjack.check_blackjack(player, [])
+        Blackjack.check_blackjack(second_hand, [])
 
     @staticmethod
     def surrender(player):
@@ -245,10 +273,18 @@ class Blackjack:
             print("\nNo winner determined. Everyone burned.")
 
     @staticmethod
+    def give_out_payment(winners, wager):
+        print("Wager of the game: %s" % wager)
+        for winner in winners:
+            # Divide total wager over all winners
+            winner.wallet.capital += (wager / len(winners))
+            print(winner.wallet.capital)
+
+    @staticmethod
     def take_money(player, amount):
-        if amount <= player.capital:
+        if amount <= player.wallet.capital:
             player.current_bet += amount
-            player.capital -= amount
+            player.wallet.capital -= amount
         else:
             print("%s can not afford to play anymore. Bitch's broke" % player.name)
 

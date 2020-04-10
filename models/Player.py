@@ -1,17 +1,21 @@
 from .Hand import Hand
+from .Wallet import Wallet
 
 
 class Player:
-    def __init__(self, name, current_deck):
+    def __init__(self, name, current_deck, skip_greeting=None):
         self.name = name
         self._deck = current_deck
         self._hand = Hand(self)
 
-        self.current_bet = 0
-        self.capital = 100
+        self._current_bet = 0
+        self.wallet = Wallet()
+        self.wallet.capital = 100
+
         self.decisions_left = -1
 
-        self.greet_player()
+        if not skip_greeting:
+            self.greet_player()
 
     @property
     def name(self):
@@ -21,18 +25,21 @@ class Player:
         self._name = value
 
     @property
+    def wallet(self):
+        return self._wallet
+    @wallet.setter
+    def wallet(self, value):
+        self._wallet = value
+
+    @property
     def current_bet(self):
         return self._current_bet
     @current_bet.setter
     def current_bet(self, value):
-        self._current_bet = value
-
-    @property
-    def capital(self):
-        return self._capital
-    @capital.setter
-    def capital(self, value):
-        self._capital = value
+        if self._current_bet + value <= self.wallet.capital:
+            self._current_bet = value
+        else:
+            print("Could not add bet (%s), not enough capital (%s)" % (value, self.capital))
 
     @property
     def decisions_left(self):

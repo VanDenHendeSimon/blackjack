@@ -6,8 +6,9 @@ import os
 
 def main():
     game = Blackjack(1)
-    game.add_player("Bimie")
-    game.add_player("Drienie")
+    if game.add_player("Bimie") is not None:
+        if game.add_player("Drienie") is not None:
+            print("Game started succesfully")
 
     game.play()
 
