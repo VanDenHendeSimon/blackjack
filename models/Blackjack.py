@@ -110,7 +110,6 @@ class Blackjack:
             "hit",
             "stand",
             "double down",
-            "split"
         ]
 
         if player.decisions_left == -1:
