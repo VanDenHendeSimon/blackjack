@@ -1,5 +1,3 @@
-from models.Deck import Deck
-from models.Player import Player
 from models.Blackjack import Blackjack
 import os
 
@@ -9,8 +7,8 @@ def main():
     game = Blackjack(1)
 
     # Check if all players can be created
-    if game.add_player("Bimie") is not None:
-        if game.add_player("Drienie") is not None:
+    if game.add_player("Simon") is not None:
+        if game.add_player("Luna") is not None:
             # If all players have been created, start the game
             game.play()
 
