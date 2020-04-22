@@ -286,7 +286,7 @@ class Blackjack:
         for winner in winners:
             # Divide total wager over all winners
             winner.wallet.capital += (wager / len(winners))
-            print("This puts your capital at: %s\n" % winner.wallet.capital)
+            print("This puts %s's capital at: %s\n" % (winner.name, winner.wallet.capital))
 
     @staticmethod
     def take_money(player, amount):
